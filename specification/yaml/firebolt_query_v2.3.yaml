@@ -1,0 +1,213 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://firebolt.go.firebolt.io/'
+info:
+  version: 2.3.0
+  title: Firebolt query api spec
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+paths:
+  /query:
+    post:
+      summary: Submit a sql statement for execution
+      description: ''
+      operationId: query
+      responses:
+        '200':
+          description: OK
+          headers:
+            Firebolt-Update-Parameters:
+              description: Request parameters which should be added to subsequent queries.
+              schema:
+                type: string
+            Firebolt-Remove-Parameters:
+              description: Request parameters which should be removed from subsequent queries.
+              schema:
+                type: string
+            Firebolt-Reset-Session:
+              description: Request to reset the session, the endpoint should be kept the same but query params should be cleared.
+              schema:
+                type: string
+            Firebolt-Update-Endpoint:
+              description: Request to update the endpoint, the endpoint should be updated to the provided value including any query parameters.
+              schema:
+                type: string
+          content:
+            text/sql:
+              schema:
+                $ref: '#/components/schemas/QueryResults'
+        '202':
+          description: Accepted
+          headers:
+            Firebolt-Update-Parameters:
+              description: Request parameters which should be added to subsequent queries.
+              schema:
+                type: string
+            Firebolt-Remove-Parameters:
+              description: Request parameters which should be removed from subsequent queries.
+              schema:
+                type: string
+            Firebolt-Reset-Session:
+              description: Request to reset the session, the endpoint should be kept the same but query params should be cleared.
+              schema:
+                type: string
+            Firebolt-Update-Endpoint:
+              description: Request to update the endpoint, the endpoint should be updated to the provided value including any query parameters.
+              schema:
+                type: string
+          content:
+            text/sql:
+              schema:
+                $ref: '#/components/schemas/AsyncApiResponse'
+        '400':
+          description: Invalid input
+      security:
+        - bearer_auth
+      requestBody:
+        $ref: '#/components/requestBodies/Query'
+
+components:
+  requestBodies:
+    Query:
+      content:
+        text/sql:
+          schema:
+            $ref: '#/components/schemas/Query'
+      description: Text of query to execute
+      required: true
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Query:
+      title: Submit a query
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+    QueryResults:
+      title: A set of query results
+      description: Describes the results of a query
+      type: object
+      properties:
+        query:
+          type: object
+          description: info on the query
+          properties:
+            query_id:
+              type: string
+              description: the id of the query
+            request_id:
+              type: string
+              description: the parameters for the sql statement
+            query_label:
+              type: string
+              description: the user provided label for the query
+            meta:
+              type: list
+              description: schema of the query results
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  type:
+                    type: string
+            rows:
+              type: integer
+              description: the number of rows returned
+            data:
+              type: list
+              description: the data returned
+              items:
+                type: list
+                items:
+                  oneOf:
+                    - type: string
+                    - type: number
+                    - type: boolean
+                    - type: null
+            statistics:
+              type: object
+              description: the statistics of the query
+              properties:
+                elapsed:
+                  type: number
+                  description: the time it took to execute the query
+                rows_read:
+                  type: integer
+                  description: the number of rows read
+                bytes_read:
+                  type: integer
+                  description: the number of bytes read
+                scanned_bytes_cache:
+                  type: integer
+                scanned_bytes_storage:
+                  type: integer
+            explain_analyze:
+              type: object
+              description: the explain analyze of the query
+              properties:
+                version:
+                  type: integer
+                root_description:
+                  type: string
+                explain_type:
+                  type: string
+                query_id:
+                  type: string
+                operators:
+                  type: list
+                  items:
+                    type: object
+                    description: info on each operator in the query
+                    properties:
+                      operator_id:
+                        type: integer
+                      operator_type:
+                        type: string
+                      input_ids:
+                        type: integer
+                      annotations:
+                        type: object
+                        properties:
+                          label:
+                            type: string
+                          output_types:
+                            type: list
+                            items:
+                              type: string
+                          input_ids:
+                            type: list
+                            items:
+                              type: integer
+                          execution_metrics:
+                            type: object
+                            properties:
+                              cpu_time_ms:
+                                type: integer
+                              max_single_work_call_thread_time_us:
+                                type: integer
+                              thread_time_ms:
+                                type: integer
+                              output_cardinality:
+                                type: integer
+    AsyncApiResponse:
+      title: Async Api Response
+      description: Info on a successfully submitted async query
+      type: object
+      properties:
+        message:
+          type: string
+        token:
+          type: list
+          items:
+            type: string
+        monitorSql:
+          type: string
+          description: A sql statement that can be submitted to monitor the query
