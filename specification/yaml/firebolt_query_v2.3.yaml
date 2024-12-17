@@ -63,7 +63,7 @@ paths:
         '400':
           description: Invalid input
       security:
-        - bearer_auth
+      - bearer_auth: []
       requestBody:
         $ref: '#/components/requestBodies/Query'
 
@@ -109,7 +109,7 @@ components:
               type: string
               description: the user provided label for the query
             meta:
-              type: list
+              type: array
               description: schema of the query results
               items:
                 type: object
@@ -122,16 +122,15 @@ components:
               type: integer
               description: the number of rows returned
             data:
-              type: list
+              type: array
               description: the data returned
               items:
-                type: list
+                type: array
                 items:
                   oneOf:
                     - type: string
                     - type: number
                     - type: boolean
-                    - type: null
             statistics:
               type: object
               description: the statistics of the query
@@ -162,7 +161,7 @@ components:
                 query_id:
                   type: string
                 operators:
-                  type: list
+                  type: array
                   items:
                     type: object
                     description: info on each operator in the query
@@ -179,11 +178,11 @@ components:
                           label:
                             type: string
                           output_types:
-                            type: list
+                            type: array
                             items:
                               type: string
                           input_ids:
-                            type: list
+                            type: array
                             items:
                               type: integer
                           execution_metrics:
@@ -205,7 +204,7 @@ components:
         message:
           type: string
         token:
-          type: list
+          type: array
           items:
             type: string
         monitorSql:
