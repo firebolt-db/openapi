@@ -90,9 +90,9 @@ components:
       properties:
         text:
           type: string
-    QueryResults:
-      title: A set of query results
-      description: Describes the results of a query
+    QueryResult:
+      title: Query result
+      description: Describes the result from a query
       type: object
       properties:
         query:
@@ -104,98 +104,98 @@ components:
               description: the id of the query
             request_id:
               type: string
-              description: the parameters for the sql statement
+              description: the id of the request
             query_label:
               type: string
               description: the user provided label for the query
-            meta:
+        meta:
+          type: array
+          description: schema of the query results
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+        rows:
+          type: integer
+          description: the number of rows returned
+        data:
+          type: array
+          description: the data returned
+          items:
+            type: array
+            items:
+              oneOf:
+                - type: string
+                - type: number
+                - type: boolean
+        statistics:
+          type: object
+          description: the statistics of the query
+          properties:
+            elapsed:
+              type: number
+              description: the time it took from when the query was received to when it was completed
+            rows_read:
+              type: integer
+              description: the number of rows read
+            bytes_read:
+              type: integer
+              description: the number of bytes read
+            scanned_bytes_cache:
+              type: integer
+            scanned_bytes_storage:
+              type: integer
+        explain_analyze:
+          type: object
+          description: the explain analyze of the query
+          properties:
+            version:
+              type: integer
+            root_description:
+              type: string
+            explain_type:
+              type: string
+            query_id:
+              type: string
+            operators:
               type: array
-              description: schema of the query results
               items:
                 type: object
+                description: info on each operator in the query
                 properties:
-                  name:
+                  operator_id:
+                    type: integer
+                  operator_type:
                     type: string
-                  type:
-                    type: string
-            rows:
-              type: integer
-              description: the number of rows returned
-            data:
-              type: array
-              description: the data returned
-              items:
-                type: array
-                items:
-                  oneOf:
-                    - type: string
-                    - type: number
-                    - type: boolean
-            statistics:
-              type: object
-              description: the statistics of the query
-              properties:
-                elapsed:
-                  type: number
-                  description: the time it took to execute the query
-                rows_read:
-                  type: integer
-                  description: the number of rows read
-                bytes_read:
-                  type: integer
-                  description: the number of bytes read
-                scanned_bytes_cache:
-                  type: integer
-                scanned_bytes_storage:
-                  type: integer
-            explain_analyze:
-              type: object
-              description: the explain analyze of the query
-              properties:
-                version:
-                  type: integer
-                root_description:
-                  type: string
-                explain_type:
-                  type: string
-                query_id:
-                  type: string
-                operators:
-                  type: array
-                  items:
+                  input_ids:
+                    type: integer
+                  annotations:
                     type: object
-                    description: info on each operator in the query
                     properties:
-                      operator_id:
-                        type: integer
-                      operator_type:
+                      label:
                         type: string
+                      output_types:
+                        type: array
+                        items:
+                          type: string
                       input_ids:
-                        type: integer
-                      annotations:
+                        type: array
+                        items:
+                          type: integer
+                      execution_metrics:
                         type: object
                         properties:
-                          label:
-                            type: string
-                          output_types:
-                            type: array
-                            items:
-                              type: string
-                          input_ids:
-                            type: array
-                            items:
-                              type: integer
-                          execution_metrics:
-                            type: object
-                            properties:
-                              cpu_time_ms:
-                                type: integer
-                              max_single_work_call_thread_time_us:
-                                type: integer
-                              thread_time_ms:
-                                type: integer
-                              output_cardinality:
-                                type: integer
+                          cpu_time_ms:
+                            type: integer
+                          max_single_work_call_thread_time_us:
+                            type: integer
+                          thread_time_ms:
+                            type: integer
+                          output_cardinality:
+                            type: integer
     AsyncApiResponse:
       title: Async Api Response
       description: Info on a successfully submitted async query
@@ -204,9 +204,7 @@ components:
         message:
           type: string
         token:
-          type: array
-          items:
-            type: string
+          type: string
         monitorSql:
           type: string
           description: A sql statement that can be submitted to monitor the query
