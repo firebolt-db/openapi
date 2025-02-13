@@ -36,7 +36,7 @@ paths:
           content:
             text/sql:
               schema:
-                $ref: '#/components/schemas/QueryResults'
+                $ref: '#/components/schemas/QueryResult'
         '202':
           description: Accepted
           headers:
@@ -84,12 +84,7 @@ components:
   schemas:
     Query:
       title: Submit a query
-      type: object
-      required:
-        - text
-      properties:
-        text:
-          type: string
+      type: string
     QueryResult:
       title: Query result
       description: Describes the result from a query
