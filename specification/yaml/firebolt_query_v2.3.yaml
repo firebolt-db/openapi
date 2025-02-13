@@ -191,6 +191,10 @@ components:
                             type: integer
                           output_cardinality:
                             type: integer
+                          optimized_out:
+                            type: boolean
+                          nothing_executed:
+                            type: boolean
     AsyncApiResponse:
       title: Async Api Response
       description: Info on a successfully submitted async query
