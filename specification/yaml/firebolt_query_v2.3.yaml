@@ -18,7 +18,7 @@ paths:
           description: OK
           headers:
             Firebolt-Update-Parameters:
-              description: Request parameters which should be added to subsequent queries.
+              description: Request parameters which should be added to subsequent queries. Parameters are provided as a comma separated list of key=value pairs with url escaping.
               schema:
                 type: string
             Firebolt-Remove-Parameters:
@@ -41,7 +41,7 @@ paths:
           description: Accepted
           headers:
             Firebolt-Update-Parameters:
-              description: Request parameters which should be added to subsequent queries.
+              description: Request parameters which should be added to subsequent queries. Parameters are provided as a comma separated list of key=value pairs with url escaping.
               schema:
                 type: string
             Firebolt-Remove-Parameters:
